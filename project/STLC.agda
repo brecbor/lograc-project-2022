@@ -29,46 +29,46 @@ data _⊢_ : Ctx → Type → Set where
 
   -- product
 
-  ∧-intro  : {Δ : Hypotheses}
-           → {A ψ : Formula}
-           → Δ ⊢ A
-           → Δ ⊢ ψ
+  ×-intro  : {Γ : Ctx}
+           → {A B : Type}
+           → Γ ⊢ A
+           → Γ ⊢ B
            -------------------
-           → Δ ⊢ A ∧ ψ
+           → Γ ⊢ A × B
           
-  ∧-elim₁  : {Δ : Hypotheses}
-           → {A ψ : Formula}
-           → Γ ⊢ A ∧ ψ
+  ×-elim₁  : {Γ : Ctx}
+           → {A B : Type}
+           → Γ ⊢ A × B
            -------------------
            → Γ ⊢ A
 
-  ∧-elim₂  : {Γ : Hypotheses}
-           → {A ψ : Formula}
-           → Γ ⊢ A ∧ ψ
+  ×-elim₂  : {Γ : Ctx}
+           → {A B : Type}
+           → Γ ⊢ A × B
            -------------------
-           → Γ ⊢ ψ
+           → Γ ⊢ B
 
   -- sum
 
-  ∨-intro₁ : {Γ : Hypotheses}
-           → {A ψ : Formula}
+  +-intro₁ : {Γ : Ctx}
+           → {A B : Type}
            → Γ ⊢ A
            ------------------
-           → Γ ⊢ A ∨ ψ
+           → Γ ⊢ A + B
 
-  ∨-intro₂ : {Γ : Hypotheses}
-           → {A ψ : Formula}
-           → Γ ⊢ ψ
+  +-intro₂ : {Γ : Ctx}
+           → {A B : Type}
+           → Γ ⊢ B
            -------------------
-           → Γ ⊢ A ∨ ψ
+           → Γ ⊢ A + B
 
-  ∨-elim   : {Γ : Hypotheses}
-           → {A₁ A₂ ψ : Formula}
-           → Γ ⊢ A₁ ∨ A₂
-           → Γ ++ [ A₁ ] ⊢ ψ
-           → Γ ++ [ A₂ ] ⊢ ψ
+  +-elim   : {Γ : Ctx}
+           → {A₁ A₂ B : Type}
+           → Γ ⊢ A₁ + A₂
+           → Γ ++ [ A₁ ] ⊢ B
+           → Γ ++ [ A₂ ] ⊢ B
            ---------------------
-           → Γ ⊢ ψ
+           → Γ ⊢ B
 
   -- lambda
 
