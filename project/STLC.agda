@@ -24,8 +24,40 @@ infixr 4 _⇒_
 
 Ctx = List Type
 
+infix 3 _∈_
+data _∈_ {A : Set} : A → List A → Set where
+  instance
+    ∈-here  : {x : A} → {xs : List A} → x ∈ (x ∷ xs)
+    ∈-there : {x y : A} {xs : List A} → {{x ∈ xs}} → x ∈ (y ∷ xs)
+
+
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
+
+  -- Context
+
+  var      : {Γ : Ctx}
+           → (A : Type)
+           → {{A ∈ Γ}}
+           -----------------
+           → Γ ⊢ A
+
+  -- base
+
+  base-intro  : {Γ : Ctx}
+              → {A : BaseType}
+              ------------------
+              → Γ ⊢ base A
+
+  -- unit
+
+  unit-intro  : {Γ : Ctx}
+              ------------------
+              → Γ ⊢ unit
+
+  -- empty
+
+  -- TODO
 
   -- product
 
@@ -36,20 +68,20 @@ data _⊢_ : Ctx → Type → Set where
            -------------------
            → Γ ⊢ A × B
           
-  ×-elim₁  : {Γ : Ctx}
+  ×-fst  : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A × B
            -------------------
            → Γ ⊢ A
 
-  ×-elim₂  : {Γ : Ctx}
+  ×-snd  : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A × B
            -------------------
            → Γ ⊢ B
 
   -- sum
-
+{-
   +-intro₁ : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A
@@ -69,7 +101,7 @@ data _⊢_ : Ctx → Type → Set where
            → Γ ++ [ A₂ ] ⊢ B
            ---------------------
            → Γ ⊢ B
-
+-}
   -- lambda
 
   ⇒-intro  : {Γ : Ctx}
