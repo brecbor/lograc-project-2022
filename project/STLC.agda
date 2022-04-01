@@ -1,5 +1,9 @@
-module STLC (BaseType : Set) where
+module STLC where
 
+postulate BaseType : Set
+
+-- in the end we will change the above lines to
+-- module STLC (BaseType : Set) where
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product         using (Σ; _,_; proj₁; proj₂; Σ-syntax)
@@ -57,7 +61,11 @@ data _⊢_ : Ctx → Type → Set where
 
   -- empty
 
-  -- TODO
+  empty-elim   : {Γ : Ctx}
+               → {A : Type}
+               → Γ ⊢ empty
+               -------------------
+               → Γ ⊢ A
 
   -- product
 
@@ -81,27 +89,27 @@ data _⊢_ : Ctx → Type → Set where
            → Γ ⊢ B
 
   -- sum
-{-
-  +-intro₁ : {Γ : Ctx}
+
+  inl      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A
            ------------------
            → Γ ⊢ A + B
 
-  +-intro₂ : {Γ : Ctx}
+  inr      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ B
            -------------------
            → Γ ⊢ A + B
 
-  +-elim   : {Γ : Ctx}
+  case     : {Γ : Ctx}
            → {A₁ A₂ B : Type}
            → Γ ⊢ A₁ + A₂
            → Γ ++ [ A₁ ] ⊢ B
            → Γ ++ [ A₂ ] ⊢ B
            ---------------------
            → Γ ⊢ B
--}
+
   -- lambda
 
   ⇒-intro  : {Γ : Ctx}
