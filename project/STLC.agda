@@ -18,13 +18,13 @@ data Type : Set where
   base : BaseType → Type
   unit : Type
   empty : Type
-  _×_ : Type → Type → Type
-  _⇒_ : Type → Type → Type
-  _+_ : Type → Type → Type
+  _×ᵗ_ : Type → Type → Type
+  _⇒ᵗ_ : Type → Type → Type
+  _+ᵗ_ : Type → Type → Type
 
-infixr 6 _×_
-infixr 5 _+_
-infixr 4 _⇒_
+infixr 6 _×ᵗ_
+infixr 5 _+ᵗ_
+infixr 4 _⇒ᵗ_
 
 Ctx = List Type
 
@@ -74,17 +74,17 @@ data _⊢_ : Ctx → Type → Set where
            → Γ ⊢ A
            → Γ ⊢ B
            -------------------
-           → Γ ⊢ A × B
+           → Γ ⊢ A ×ᵗ B
           
   ×-fst  : {Γ : Ctx}
            → {A B : Type}
-           → Γ ⊢ A × B
+           → Γ ⊢ A ×ᵗ B
            -------------------
            → Γ ⊢ A
 
   ×-snd  : {Γ : Ctx}
            → {A B : Type}
-           → Γ ⊢ A × B
+           → Γ ⊢ A ×ᵗ B
            -------------------
            → Γ ⊢ B
 
@@ -94,17 +94,17 @@ data _⊢_ : Ctx → Type → Set where
            → {A B : Type}
            → Γ ⊢ A
            ------------------
-           → Γ ⊢ A + B
+           → Γ ⊢ A +ᵗ B
 
   inr      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ B
            -------------------
-           → Γ ⊢ A + B
+           → Γ ⊢ A +ᵗ B
 
   case     : {Γ : Ctx}
            → {A₁ A₂ B : Type}
-           → Γ ⊢ A₁ + A₂
+           → Γ ⊢ A₁ +ᵗ A₂
            → Γ ++ [ A₁ ] ⊢ B
            → Γ ++ [ A₂ ] ⊢ B
            ---------------------
@@ -116,11 +116,11 @@ data _⊢_ : Ctx → Type → Set where
            → {A B : Type}
            → Γ ++ [ A ] ⊢ B
            --------------------
-           → Γ ⊢ A ⇒ B
+           → Γ ⊢ A ⇒ᵗ B
 
   ⇒-elim   : {Γ : Ctx}
            → {A B : Type}
-           → Γ ⊢ A ⇒ B
+           → Γ ⊢ A ⇒ᵗ B
            → Γ ⊢ A
            -------------------
            → Γ ⊢ B  
