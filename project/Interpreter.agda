@@ -1,17 +1,15 @@
 module Interpreter where
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
-open import Data.Product --         using (Σ; _,_; proj₁; proj₂; Σ-syntax)
-open import Data.Sum             using (_⊎_; inj₁; inj₂)
+open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
+open import Data.Sum             using (_⊎_; inj₁; inj₂; [_,_])
 open import Data.Empty           using (⊥; ⊥-elim)
-open import Data.Unit            using (⊤)
-open import Data.List            using (List; []; _∷_; [_]; _++_; length; map)
+open import Data.Unit            using (⊤; tt)
+open import Data.List            using (List; []; _∷_; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 
 
 open import STLC
-
-postulate I : BaseType → Set
 
 
 ⟦_⟧ : Type → Set
@@ -27,16 +25,23 @@ postulate I : BaseType → Set
 ⟦ A ∷ Γ ⟧ₑ = ⟦ A ⟧ × ⟦ Γ ⟧ₑ
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
-⟦ var _ ⟧ᵢ = {!!}
-⟦ base-intro ⟧ᵢ = {!!}
-⟦ unit-intro ⟧ᵢ = {!!}
-⟦ empty-elim x ⟧ᵢ = {!!}
-⟦ ×-intro x x₁ ⟧ᵢ = {!!}
-⟦ ×-fst x ⟧ᵢ = {!!}
-⟦ ×-snd x ⟧ᵢ = {!!}
-⟦ inl x ⟧ᵢ = {!!}
-⟦ inr x ⟧ᵢ = {!!}
-⟦ case x x₁ x₂ ⟧ᵢ = {!!}
-⟦ ⇒-intro x ⟧ᵢ = {!!}
-⟦ ⇒-elim x x₁ ⟧ᵢ = {!!}
+⟦ var x {{ ∈-here }} ⟧ᵢ = λ { (y , ys) → y }
+⟦ var x {{ ∈-there }} ⟧ᵢ = λ { (y , ys) → ⟦ var x ⟧ᵢ ys }
+⟦ const {Γ} {A} c ⟧ᵢ = λ ctx → c
+⟦ ⁅⁆ ⟧ᵢ = λ _ → tt
+⟦ absurd t ⟧ᵢ = {!!}
+⟦ t ؛ u ⟧ᵢ = λ ctx →  ⟦ t ⟧ᵢ ctx , ⟦ u ⟧ᵢ ctx
+⟦ fst t ⟧ᵢ = λ ctx → proj₁ (⟦ t ⟧ᵢ ctx)
+⟦ snd t ⟧ᵢ = λ ctx → proj₂ (⟦ t ⟧ᵢ ctx)
+⟦ inl t ⟧ᵢ = λ ctx → inj₁ (⟦ t ⟧ᵢ ctx)
+⟦ inr t ⟧ᵢ = λ ctx → inj₂ (⟦ t ⟧ᵢ ctx)
+⟦ case {Γ} {A₁} {A₂} {B} t u₁ u₂ ⟧ᵢ = λ ctx → {!!} --  {!⟦ t [ u₁ , u₂ ] ⟧ᵢ ctx!}
+⟦ fun {Γ} {A} {B} t ⟧ᵢ = {!!} {- λ ctx → λ z →  ⟦ x ⟧ᵢ (add-to-ctx ctx z) 
+  where
+    add-to-ctx : ⟦ Γ ⟧ₑ → ⟦ A ⟧ → ⟦ Γ ++ [ A ] ⟧ₑ
+    add-to-ctx ctx z = {!ctx!} -}
+⟦ app t u ⟧ᵢ = {!!}
+
+
+
 

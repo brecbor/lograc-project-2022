@@ -1,6 +1,7 @@
 module STLC where
 
 postulate BaseType : Set
+postulate I : BaseType → Set
 
 -- in the end we will change the above lines to
 -- module STLC (BaseType : Set) where
@@ -48,20 +49,21 @@ data _⊢_ : Ctx → Type → Set where
 
   -- base
 
-  base-intro  : {Γ : Ctx}
+  const       : {Γ : Ctx}
               → {A : BaseType}
+              → I A
               ------------------
               → Γ ⊢ base A
 
   -- unit
 
-  unit-intro  : {Γ : Ctx}
+  ⁅⁆          : {Γ : Ctx}
               ------------------
               → Γ ⊢ unit
 
   -- empty
 
-  empty-elim   : {Γ : Ctx}
+  absurd       : {Γ : Ctx}
                → {A : Type}
                → Γ ⊢ empty
                -------------------
@@ -69,20 +71,20 @@ data _⊢_ : Ctx → Type → Set where
 
   -- product
 
-  ×-intro  : {Γ : Ctx}
+  _؛_      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A
            → Γ ⊢ B
            -------------------
            → Γ ⊢ A ×ᵗ B
           
-  ×-fst  : {Γ : Ctx}
+  fst      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A ×ᵗ B
            -------------------
            → Γ ⊢ A
 
-  ×-snd  : {Γ : Ctx}
+  snd      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A ×ᵗ B
            -------------------
@@ -112,13 +114,13 @@ data _⊢_ : Ctx → Type → Set where
 
   -- lambda
 
-  ⇒-intro  : {Γ : Ctx}
+  fun      : {Γ : Ctx}
            → {A B : Type}
            → Γ ++ [ A ] ⊢ B
            --------------------
            → Γ ⊢ A ⇒ᵗ B
 
-  ⇒-elim   : {Γ : Ctx}
+  app      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A ⇒ᵗ B
            → Γ ⊢ A
