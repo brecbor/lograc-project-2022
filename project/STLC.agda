@@ -11,7 +11,7 @@ open import Data.Product         using (Σ; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum             using (_⊎_; inj₁; inj₂)
 open import Data.Empty           using (⊥; ⊥-elim)
 import Data.Unit
-open import Data.List            using (List; []; _∷_; [_]; _++_; length; map)
+-- open import Data.List            using (List; []; _∷_; [_]; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 
 
@@ -27,14 +27,18 @@ infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
 infixr 4 _⇒ᵗ_
 
-Ctx = List Type
+-- Ctx = List Type
+data List' (A : Set) : Set where
+  [] : List' A
+  _∷_ : List' A → A → List' A
+
+Ctx = List' Type
 
 infix 3 _∈_
-data _∈_ {A : Set} : A → List A → Set where
+data _∈_ {A : Set} : A → List' A → Set where
   instance
-    ∈-here  : {x : A} → {xs : List A} → x ∈ (x ∷ xs)
-    ∈-there : {x y : A} {xs : List A} → {{x ∈ xs}} → x ∈ (y ∷ xs)
-
+    ∈-here  : {x : A} → {xs : List' A} → x ∈ (xs ∷ x)
+    ∈-there : {x y : A} {xs : List' A} → {{x ∈ xs}} → x ∈ (xs ∷ y)
 
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
@@ -57,7 +61,7 @@ data _⊢_ : Ctx → Type → Set where
 
   -- unit
 
-  ⁅⁆          : {Γ : Ctx}
+  unit          : {Γ : Ctx}
               ------------------
               → Γ ⊢ unit
 
@@ -107,8 +111,8 @@ data _⊢_ : Ctx → Type → Set where
   case     : {Γ : Ctx}
            → {A₁ A₂ B : Type}
            → Γ ⊢ A₁ +ᵗ A₂
-           → Γ ++ [ A₁ ] ⊢ B
-           → Γ ++ [ A₂ ] ⊢ B
+           → Γ ∷ A₁ ⊢ B
+           → Γ ∷ A₂ ⊢ B
            ---------------------
            → Γ ⊢ B
 
@@ -116,7 +120,7 @@ data _⊢_ : Ctx → Type → Set where
 
   fun      : {Γ : Ctx}
            → {A B : Type}
-           → Γ ++ [ A ] ⊢ B
+           → Γ ∷ A ⊢ B
            --------------------
            → Γ ⊢ A ⇒ᵗ B
 
