@@ -2,7 +2,7 @@ module Interpreter where
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
-open import Data.Sum             using (_⊎_; inj₁; inj₂; [_,_])
+open import Data.Sum             using (_⊎_; inj₁; inj₂;  [_,_] )
 open import Data.Empty          -- using (⊥; ⊥-elim)
 open import Data.Unit            using (⊤; tt)
 -- open import Data.List            using (List; []; _∷_; _++_; length; map)
@@ -39,9 +39,9 @@ aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 ⟦ snd t ⟧ᵢ = λ ctx → proj₂ (⟦ t ⟧ᵢ ctx)
 ⟦ inl t ⟧ᵢ = λ ctx → inj₁ (⟦ t ⟧ᵢ ctx)
 ⟦ inr t ⟧ᵢ = λ ctx → inj₂ (⟦ t ⟧ᵢ ctx)
-⟦ case t u₁ u₂ ⟧ᵢ = λ ctx → {!!} [ {!⟦ u!} , {!!} ]
+⟦ case t u₁ u₂ ⟧ᵢ = λ ctx → [ ( λ z → ⟦  u₁ ⟧ᵢ (ctx , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ (ctx , z) )) ] ((⟦ t ⟧ᵢ ctx)) 
 ⟦ fun t ⟧ᵢ = λ ctx → λ z → ⟦ t ⟧ᵢ (ctx , z)
-⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)
+⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)  
 
 
 
