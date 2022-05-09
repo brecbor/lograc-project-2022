@@ -20,6 +20,7 @@ open import STLC
 ⟦ A ×ᵗ B ⟧ = ⟦ A ⟧ × ⟦ B ⟧
 ⟦ A ⇒ᵗ B ⟧ = ⟦ A ⟧ → ⟦ B ⟧
 ⟦ A +ᵗ B ⟧ = ⟦ A ⟧ ⊎ ⟦ B ⟧
+⟦ tree ⟧ = Tree
 
 ⟦_⟧ₑ : Ctx → Set
 ⟦ [] ⟧ₑ = ⊥
@@ -41,7 +42,8 @@ aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 ⟦ inr t ⟧ᵢ = λ ctx → inj₂ (⟦ t ⟧ᵢ ctx)
 ⟦ case t u₁ u₂ ⟧ᵢ = λ ctx → [ ( λ z → ⟦  u₁ ⟧ᵢ (ctx , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ (ctx , z) )) ] ((⟦ t ⟧ᵢ ctx)) 
 ⟦ fun t ⟧ᵢ = λ ctx → λ z → ⟦ t ⟧ᵢ (ctx , z)
-⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)  
+⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)
+⟦ constr c args ⟧ᵢ = λ ctx → Constr c λ i → ⟦ args i ⟧ᵢ ctx
 
 
 

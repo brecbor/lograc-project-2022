@@ -3,8 +3,13 @@ module STLC where
 postulate BaseType : Set
 postulate I : BaseType → Set
 
+postulate ℂ : Set
+postulate par : ℂ → BaseType  -- TODO: enkrat bo BaseType sel v GroundType
+postulate ar : ℂ → Set
+
 -- in the end we will change the above lines to
 -- module STLC (BaseType : Set) where
+-- (ℂ : Set) (ar : ℂ → Set)
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product         using (Σ; _,_; proj₁; proj₂; Σ-syntax)
@@ -22,6 +27,7 @@ data Type : Set where
   _×ᵗ_ : Type → Type → Type
   _⇒ᵗ_ : Type → Type → Type
   _+ᵗ_ : Type → Type → Type
+  tree : Type  -- ??? ali je to prav
 
 infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
@@ -129,4 +135,33 @@ data _⊢_ : Ctx → Type → Set where
            → Γ ⊢ A ⇒ᵗ B
            → Γ ⊢ A
            -------------------
-           → Γ ⊢ B  
+           → Γ ⊢ B
+
+  -- tree
+
+  constr   : {Γ : Ctx}
+           → ∀(c : ℂ)
+           → (I (par c))
+           → (ar c → Γ ⊢ tree)
+           --------------------
+           → Γ ⊢ tree
+
+  fold     : {Γ : Ctx}
+           → ∀(A : Type)
+           → (∀(c : ℂ) → (ar c → A) → Γ ⊢ A)
+           --------------------
+           → Γ ⊢ A
+
+
+
+data Tree : Set where
+  Constr   : ∀(c : ℂ)
+           → (I (par c))
+           → (ar c → Tree)
+           --------------------
+           → Tree
+
+  Fold     : ∀(A : Set)
+           → (∀(c : ℂ) → (ar c → A) → A)
+           --------------------
+           → A
