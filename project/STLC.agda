@@ -141,17 +141,17 @@ data _⊢_ : Ctx → Type → Set where
 
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
-           → (I (par c))
+           → (I (par c))  -- ??? al je (I (par c))
            → (ar c → Γ ⊢ tree)
            --------------------
            → Γ ⊢ tree
-
+{-
   fold     : {Γ : Ctx}
            → ∀(A : Type)
            → (∀(c : ℂ) → (ar c → A) → Γ ⊢ A)
            --------------------
            → Γ ⊢ A
-
+-}
 
 
 data Tree : Set where
@@ -160,8 +160,9 @@ data Tree : Set where
            → (ar c → Tree)
            --------------------
            → Tree
-
+{-
   Fold     : ∀(A : Set)
            → (∀(c : ℂ) → (ar c → A) → A)
            --------------------
            → A
+-}
