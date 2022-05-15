@@ -145,13 +145,14 @@ data _⊢_ : Ctx → Type → Set where
            → (ar c → Γ ⊢ tree)
            --------------------
            → Γ ⊢ tree
-{-
+
   fold     : {Γ : Ctx}
-           → ∀(A : Type)
-           → (∀(c : ℂ) → (ar c → A) → Γ ⊢ A)
+           → ∀{A : Type}
+           → (Γ ⊢ tree)
+           → (∀(c : ℂ) → (I (par c)) → (ar c → Γ ⊢  A) ) -- (ar c → A) → Γ ⊢ A)
            --------------------
            → Γ ⊢ A
--}
+
 
 
 data Tree : Set where
@@ -160,9 +161,13 @@ data Tree : Set where
            → (ar c → Tree)
            --------------------
            → Tree
-{-
-  Fold     : ∀(A : Set)
-           → (∀(c : ℂ) → (ar c → A) → A)
+
+
+
+Fold     : ∀{A : Set}
+           → Tree 
+           → (∀(c : ℂ) → (I (par c)) → (ar c → A) )
            --------------------
            → A
--}
+Fold T f = {!   !}
+
