@@ -149,7 +149,7 @@ data _⊢_ : Ctx → Type → Set where
   fold     : {Γ : Ctx}
            → ∀{A : Type}
            → (Γ ⊢ tree)
-           → ( ∀(c : ℂ) → ((Γ ∷ ( base (par c))) ∷ (base (ar c) ⇒ᵗ A) ⊢ A))
+           → ( ∀(c : ℂ) →  Γ ⊢ base (par c) ⇒ᵗ (base (ar c) ⇒ᵗ A) ⇒ᵗ A)  --((Γ ∷ ( base (par c))) ∷ (base (ar c) ⇒ᵗ A) ⊢ A))
            -- → (∀(c : ℂ) → (I (par c)) → (ar c → Γ ⊢ A ))
            --------------------
            → Γ ⊢ A
