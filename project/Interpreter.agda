@@ -43,8 +43,8 @@ aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 ⟦ case t u₁ u₂ ⟧ᵢ = λ ctx → [ ( λ z → ⟦  u₁ ⟧ᵢ (ctx , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ (ctx , z) )) ] ((⟦ t ⟧ᵢ ctx)) 
 ⟦ fun t ⟧ᵢ = λ ctx → λ z → ⟦ t ⟧ᵢ (ctx , z)
 ⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)
-⟦ constr c param args ⟧ᵢ = λ ctx → Constr c param (λ i → ⟦ args i ⟧ᵢ ctx) -- Constr c ? (λ i → ⟦ args i ⟧ᵢ) ctx
-
+⟦ constr c param args ⟧ᵢ = λ ctx → Constr c param (λ i → ⟦ args i ⟧ᵢ ctx) 
+⟦ fold t f ⟧ᵢ = λ ctx → Fold (⟦ t ⟧ᵢ ctx) λ i → ⟦ fun (fun (f i)) ⟧ᵢ ctx 
 
 
 

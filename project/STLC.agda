@@ -5,7 +5,7 @@ postulate I : BaseType → Set
 
 postulate ℂ : Set
 postulate par : ℂ → BaseType  -- TODO: enkrat bo BaseType sel v GroundType
-postulate ar : ℂ → Set
+postulate ar : ℂ → BaseType
 
 -- in the end we will change the above lines to
 -- module STLC (BaseType : Set) where
@@ -142,14 +142,15 @@ data _⊢_ : Ctx → Type → Set where
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
            → (I (par c))  -- ??? al je (I (par c))
-           → (ar c → Γ ⊢ tree)
+           → (I (ar c) → Γ ⊢ tree)
            --------------------
            → Γ ⊢ tree
 
   fold     : {Γ : Ctx}
            → ∀{A : Type}
            → (Γ ⊢ tree)
-           → (∀(c : ℂ) → (I (par c)) → (ar c → Γ ⊢  A) ) -- (ar c → A) → Γ ⊢ A)
+           → ( ∀(c : ℂ) → ((Γ ∷ ( base (par c))) ∷ (base (ar c) ⇒ᵗ A) ⊢ A))
+           -- → (∀(c : ℂ) → (I (par c)) → (ar c → Γ ⊢ A ))
            --------------------
            → Γ ⊢ A
 
@@ -158,7 +159,7 @@ data _⊢_ : Ctx → Type → Set where
 data Tree : Set where
   Constr   : ∀(c : ℂ)
            → (I (par c))
-           → (ar c → Tree)
+           → (I (ar c) → Tree)
            --------------------
            → Tree
 
@@ -166,8 +167,9 @@ data Tree : Set where
 
 Fold     : ∀{A : Set}
            → Tree 
-           → (∀(c : ℂ) → (I (par c)) → (ar c → A) )
+           → (∀(c : ℂ) → (I (par c)) → (I (ar c) → A) → A)
            --------------------
            → A
-Fold T f = {!   !}
+
+Fold {A} (Constr c x args) f = f c x (λ i → Fold (args i) f)
 
