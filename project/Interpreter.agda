@@ -31,6 +31,7 @@ aux-proj {{ ∈-here }} (_ , x) = x
 aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
+⟦ LET x IN t ⟧ᵢ η = {! ⟦ t ⟧  !}
 ⟦ var x ⟧ᵢ = λ ctx → aux-proj ctx
 ⟦ const {Γ} {A} c ⟧ᵢ = λ ctx → c
 ⟦ unit ⟧ᵢ = λ _ → tt
