@@ -1,12 +1,12 @@
-module STLC where
-
+module STLC (BaseType : Set) (I : BaseType → Set) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
+{-
 postulate BaseType : Set
 postulate I : BaseType → Set
 
 postulate ℂ : Set
 postulate par : ℂ → BaseType  -- TODO: enkrat bo BaseType sel v GroundType
 postulate ar : ℂ → BaseType
-
+-}
 -- in the end we will change the above lines to
 -- module STLC (BaseType : Set) where
 -- (ℂ : Set) (ar : ℂ → Set)

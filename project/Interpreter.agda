@@ -1,4 +1,4 @@
-module Interpreter where
+module Interpreter (BaseType : Set) (I : BaseType → Set) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
@@ -10,7 +10,7 @@ open import Data.List.Properties using (map-id; map-compose)
 open import Function using (id; _∘_)
 
 
-open import STLC
+open import STLC BaseType I ℂ par ar
 
 
 ⟦_⟧ : Type → Set
@@ -23,7 +23,7 @@ open import STLC
 ⟦ tree ⟧ = Tree
 
 ⟦_⟧ₑ : Ctx → Set
-⟦ [] ⟧ₑ = ⊥
+⟦ [] ⟧ₑ = ⊤ -- ⊥
 ⟦ Γ ∷ A ⟧ₑ = ⟦ Γ ⟧ₑ × ⟦ A ⟧
 
 aux-proj : {A : Type} {Γ : Ctx} → {{A ∈ Γ}} → ⟦ Γ ⟧ₑ → ⟦ A ⟧
