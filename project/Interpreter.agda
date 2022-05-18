@@ -31,7 +31,7 @@ aux-proj {{ ∈-here }} (_ , x) = x
 aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
-⟦ LET x IN t ⟧ᵢ η = {! ⟦ t ⟧  !}
+-- ⟦ LET x IN t ⟧ᵢ η = {! ⟦ t ⟧ᵢ (η , x)  !}
 ⟦ var x ⟧ᵢ = λ ctx → aux-proj ctx
 ⟦ const {Γ} {A} c ⟧ᵢ = λ ctx → c
 ⟦ unit ⟧ᵢ = λ _ → tt
@@ -42,7 +42,7 @@ aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 ⟦ inl t ⟧ᵢ = λ ctx → inj₁ (⟦ t ⟧ᵢ ctx)
 ⟦ inr t ⟧ᵢ = λ ctx → inj₂ (⟦ t ⟧ᵢ ctx)
 ⟦ case t u₁ u₂ ⟧ᵢ = λ ctx → [ ( λ z → ⟦  u₁ ⟧ᵢ (ctx , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ (ctx , z) )) ] ((⟦ t ⟧ᵢ ctx)) 
-⟦ fun t ⟧ᵢ = λ ctx → λ z → ⟦ t ⟧ᵢ (ctx , z)
+⟦ fun t ⟧ᵢ η = λ z → ⟦ t ⟧ᵢ (η , z)
 ⟦ app t u ⟧ᵢ = λ ctx → (⟦ t ⟧ᵢ ctx) (⟦ u ⟧ᵢ ctx)
 ⟦ constr c param args ⟧ᵢ = λ ctx → Constr c param (λ i → ⟦ args i ⟧ᵢ ctx) 
 ⟦ fold t f ⟧ᵢ = λ ctx → Fold (⟦ t ⟧ᵢ ctx) λ i → ⟦ f i ⟧ᵢ ctx 

@@ -50,14 +50,14 @@ infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
 
   -- Context
-  
+  {-
   LET_IN_  : {Γ : Ctx}
            → (A : Type)
            → {B : Type}
            → Γ ⊢ B
            -----------------------
            → Γ ∷ A ⊢ B
-
+  -}
   var      : {Γ : Ctx}
            → (A : Type)
            → {{A ∈ Γ}}
