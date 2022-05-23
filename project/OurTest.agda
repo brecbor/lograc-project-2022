@@ -23,6 +23,7 @@ I unit = ⊤
 I children = Children
 
 
+
 data ℂ : Set where
   leaf : ℂ
   node : ℂ
@@ -58,34 +59,37 @@ program5 = ⟦ constr node 42 aux-tree ⟧ᵢ tt
     aux-tree left = constr leaf tt λ { () }
     aux-tree right = constr node 9 λ { left → constr leaf tt λ { () }
                                      ; right → constr leaf tt λ { () } }
-{-                                     
-program6 : ?
-program6 = ⟦ fold (constr node 42 aux-tree) () ⟧ᵢ tt
+                                  
+program6 : ℕ
+program6 = ⟦ fold (constr node 42 aux-tree) (λ { leaf → fun (fun (const 0))
+                                               ; node → fun (fun ( var (∈-there ∈-here)))}) ⟧ᵢ tt 
+                                                 -- app (var (base children ⇒ᵗ {!   !}) {{∈-here}}) (const left) ؛ (var (base nat) {{ ∈-there  {{∈-here}} }} ؛ app (var _ {{∈-here}}) (const right)))))}) ⟧ᵢ tt
   where
     aux-tree : Children → [] ⊢ tree
     aux-tree left = constr leaf tt λ { () }
     aux-tree right = constr node 9 λ { left → constr leaf tt λ { () }
                                      ; right → constr leaf tt λ { () } }
--}
 
-program7 : ⟦ [] ∷ base nat ⟧ₑ → ℕ
-program7 = ⟦ var (base nat) {{∈-here}} ⟧ᵢ
+
+program7 : ⟦ ([] ∷ base nat) ∷ base nat ⟧ₑ → ℕ
+program7 = ⟦ var (∈-there  ∈-here) ⟧ᵢ
 
 program8 : ℕ
-program8 = ⟦ var (base nat) {{∈-here}} ⟧ᵢ (tt , 5)
+program8 = ⟦ var (∈-there (∈-there ∈-here)) ⟧ᵢ (((tt , 5) , 8) , 9)
 
 program9 : (x : ⊤) (x₁ : ⟦ base nat ×ᵗ base nat ⟧) → ⟦ base nat ⟧
-program9 = ⟦ fun (fst (var (base nat ×ᵗ base nat) {{∈-here}})) ⟧ᵢ
+program9 = ⟦ fun (fst (var ∈-here)) ⟧ᵢ
 
 program10 : ℕ
-program10 = ⟦ app (fun (fst (var (base nat ×ᵗ base nat) {{∈-here}}))) ((const 5 ؛ const 4)) ⟧ᵢ tt
+program10 = ⟦ app (fun (fst (var ∈-here))) ((const 5 ؛ const 4)) ⟧ᵢ tt
 
 {-
 Vprasanja:
-1. pri var bi lahko bil argument s tipom impliciten in bi se vedno delal?
-2. prvi var bova mogla vedno podat here in there, da bo delal
-3. ali so te zadnji programi vredu napisani oz. ali je tko mislen al ne?
-4. ali rabiva let ali ne
+1. pri var bi lahko bil argument s tipom impliciten in bi se vedno delal? :)
+2. prvi var bova mogla vedno podat here in there, da bo delal :) 
+3. ali so te zadnji programi vredu napisani oz. ali je tko mislen al ne? :)
+4. ali rabiva let ali ne → RABIVA 
+5. kako sestet vse v drevesu - kako dodava plus
 
 TODO:
 1. probava ce dela var, kjer je argument s tipom impliciten

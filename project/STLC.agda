@@ -42,9 +42,8 @@ Ctx = List' Type
 
 infix 3 _∈_
 data _∈_ {A : Set} : A → List' A → Set where
-  instance
     ∈-here  : {x : A} → {xs : List' A} → x ∈ (xs ∷ x)
-    ∈-there : {x y : A} {xs : List' A} → {{x ∈ xs}} → x ∈ (xs ∷ y)
+    ∈-there : {x y : A} {xs : List' A} → x ∈ xs → x ∈ (xs ∷ y)
 
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
@@ -54,13 +53,22 @@ data _⊢_ : Ctx → Type → Set where
   LET_IN_  : {Γ : Ctx}
            → (A : Type)
            → {B : Type}
-           → Γ ⊢ B
+           → Γ ⊢ A
+           -> G , A |- B
            -----------------------
-           → Γ ∷ A ⊢ B
+           → Γ ⊢ B
+
+
+let x = V in W
+let V in W
+
+(lambda x . W) V
+app (fun W) V
+
   -}
   var      : {Γ : Ctx}
-           → (A : Type)
-           → {{A ∈ Γ}}
+           → {A : Type}
+           → A ∈ Γ
            -----------------
            → Γ ⊢ A
 
@@ -156,11 +164,19 @@ data _⊢_ : Ctx → Type → Set where
   fold     : {Γ : Ctx}
            → ∀{A : Type}
            → (Γ ⊢ tree)
-           → ( ∀(c : ℂ) →  Γ ⊢ base (par c) ⇒ᵗ (base (ar c) ⇒ᵗ A) ⇒ᵗ A)  --((Γ ∷ ( base (par c))) ∷ (base (ar c) ⇒ᵗ A) ⊢ A))
-           -- → (∀(c : ℂ) → (I (par c)) → (ar c → Γ ⊢ A ))
+           → ( ∀(c : ℂ) →  Γ ⊢ base (par c) ⇒ᵗ (base (ar c) ⇒ᵗ A) ⇒ᵗ A)
            --------------------
            → Γ ⊢ A
-
+  
+  -- functions for base types
+{-
+  _++_     : {Γ : Ctx}
+           → {A : BaseType}
+           → Γ ⊢ base A
+           → Γ ⊢ base A
+           --------------------
+           → Γ ⊢ base A
+-}
 
 
 data Tree : Set where

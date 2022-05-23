@@ -26,13 +26,13 @@ open import STLC BaseType I ℂ par ar
 ⟦ [] ⟧ₑ = ⊤ -- ⊥
 ⟦ Γ ∷ A ⟧ₑ = ⟦ Γ ⟧ₑ × ⟦ A ⟧
 
-aux-proj : {A : Type} {Γ : Ctx} → {{A ∈ Γ}} → ⟦ Γ ⟧ₑ → ⟦ A ⟧
-aux-proj {{ ∈-here }} (_ , x) = x
-aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
+aux-proj : {A : Type} {Γ : Ctx} → A ∈ Γ → ⟦ Γ ⟧ₑ → ⟦ A ⟧
+aux-proj ∈-here (_ , x) = x
+aux-proj (∈-there index) (xs , _) = aux-proj index xs
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
 -- ⟦ LET x IN t ⟧ᵢ η = {! ⟦ t ⟧ᵢ (η , x)  !}
-⟦ var x ⟧ᵢ η = aux-proj  η
+⟦ var index ⟧ᵢ η = aux-proj index η
 ⟦ const {Γ} {A} c ⟧ᵢ η = c
 ⟦ unit ⟧ᵢ _  = tt
 ⟦ absurd t ⟧ᵢ =  ⊥-elim ∘ ⟦ t ⟧ᵢ
@@ -45,7 +45,8 @@ aux-proj {{ ∈-there }} (xs , _) = aux-proj xs
 ⟦ fun t ⟧ᵢ η = λ z → ⟦ t ⟧ᵢ (η , z)
 ⟦ app t u ⟧ᵢ η = (⟦ t ⟧ᵢ  η) (⟦ u ⟧ᵢ  η)
 ⟦ constr c param args ⟧ᵢ η = Constr c param (λ i → ⟦ args i ⟧ᵢ  η) 
-⟦ fold t f ⟧ᵢ η = Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η 
+⟦ fold t f ⟧ᵢ η = Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η
+-- ⟦ x ++ y ⟧ᵢ η = {! (⟦ x ⟧ᵢ η) Data.Nat.+ (⟦ y ⟧ᵢ η) !} 
 
 
 
