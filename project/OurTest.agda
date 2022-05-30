@@ -22,7 +22,11 @@ I empty = ⊥
 I unit = ⊤
 I children = Children
 
+data BaseDef : BaseType → Set where
+  plus : BaseDef nat
 
+BaseOp : {A : BaseType} → BaseDef A → I A → I A → I A
+BaseOp plus m n = m + n
 
 data ℂ : Set where
   leaf : ℂ
@@ -34,10 +38,10 @@ par node = nat
 
 ar : ℂ → BaseType
 ar leaf = empty
-ar node = children
+ar node = children 
 
-open import Interpreter BaseType I ℂ par ar
-open import STLC BaseType I ℂ par ar
+open import Interpreter BaseType I BaseDef BaseOp ℂ par ar
+open import STLC BaseType I BaseDef BaseOp ℂ par ar
 
 
 program : (x : ⊤) → ⊤
@@ -82,6 +86,21 @@ program9 = ⟦ fun (fst (var ∈-here)) ⟧ᵢ
 
 program10 : ℕ
 program10 = ⟦ app (fun (fst (var ∈-here))) ((const 5 ؛ const 4)) ⟧ᵢ tt
+
+program11 : ℕ
+program11 = ⟦ baseFun plus (const 5) (const 7) ⟧ᵢ tt
+
+program12 : ℕ
+program12 = ⟦
+  fold
+    (constr node 42 aux-tree)
+    (λ { leaf → fun (fun (const 0))
+       ; node → fun (fun (baseFun plus (var (∈-there ∈-here)) (baseFun plus (app (var ∈-here) (const left)) ((app (var ∈-here) (const right))))))}) ⟧ᵢ tt
+  where
+    aux-tree : Children → [] ⊢ tree
+    aux-tree left = constr leaf tt λ { () }
+    aux-tree right = constr node 9 λ { left → constr leaf tt λ { () }
+                                     ; right → constr leaf tt λ { () } }
 
 {-
 Vprasanja:

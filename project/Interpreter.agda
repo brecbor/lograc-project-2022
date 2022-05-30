@@ -1,4 +1,4 @@
-module Interpreter (BaseType : Set) (I : BaseType → Set) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
+module Interpreter (BaseType : Set) (I : BaseType → Set) (BaseDef : BaseType → Set) (BaseOp : {A : BaseType} → BaseDef A → I A → I A → I A) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
@@ -10,7 +10,7 @@ open import Data.List.Properties using (map-id; map-compose)
 open import Function using (id; _∘_)
 
 
-open import STLC BaseType I ℂ par ar
+open import STLC BaseType I BaseDef BaseOp ℂ par ar
 
 
 ⟦_⟧ : Type → Set
@@ -46,7 +46,7 @@ aux-proj (∈-there index) (xs , _) = aux-proj index xs
 ⟦ app t u ⟧ᵢ η = (⟦ t ⟧ᵢ  η) (⟦ u ⟧ᵢ  η)
 ⟦ constr c param args ⟧ᵢ η = Constr c param (λ i → ⟦ args i ⟧ᵢ  η) 
 ⟦ fold t f ⟧ᵢ η = Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η
--- ⟦ x ++ y ⟧ᵢ η = {! (⟦ x ⟧ᵢ η) Data.Nat.+ (⟦ y ⟧ᵢ η) !} 
+⟦ baseFun name x y ⟧ᵢ η = BaseOp name (⟦ x ⟧ᵢ η) (⟦ y ⟧ᵢ η) 
 
 
 

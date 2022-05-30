@@ -1,4 +1,4 @@
-module STLC (BaseType : Set) (I : BaseType → Set) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
+module STLC (BaseType : Set) (I : BaseType → Set) (BaseDef : BaseType → Set) (BaseOp : {A : BaseType} → BaseDef A → I A → I A → I A) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
 {-
 postulate BaseType : Set
 postulate I : BaseType → Set
@@ -169,14 +169,15 @@ app (fun W) V
            → Γ ⊢ A
   
   -- functions for base types
-{-
-  _++_     : {Γ : Ctx}
+
+  baseFun  : {Γ : Ctx}
            → {A : BaseType}
+           → BaseDef A
            → Γ ⊢ base A
            → Γ ⊢ base A
            --------------------
            → Γ ⊢ base A
--}
+
 
 
 data Tree : Set where
