@@ -1,4 +1,6 @@
-module STLC (BaseType : Set) (I : BaseType → Set) (BaseDef : BaseType → Set) (BaseOp : {A : BaseType} → BaseDef A → I A → I A → I A) (ℂ : Set) (par : ℂ → BaseType) (ar : ℂ → BaseType) where
+open import Signature
+
+module STLC (𝕊 : Signature.Signature) where
 {-
 postulate BaseType : Set
 postulate I : BaseType → Set
@@ -19,6 +21,7 @@ import Data.Unit
 -- open import Data.List            using (List; []; _∷_; [_]; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 
+open Signature.Signature 𝕊
 
 data Type : Set where
   base : BaseType → Type
@@ -32,6 +35,14 @@ data Type : Set where
 infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
 infixr 4 _⇒ᵗ_
+
+J : Signature.Ground BaseType → Type
+J (baseᵍ B) = base B
+J emptyᵍ = empty
+J unitᵍ = unit
+J (A +ᵍ B) = J A ×ᵗ J B
+J (A ×ᵍ B) = J A +ᵗ J B
+
 
 -- Ctx = List Type
 data List' (A : Set) : Set where
@@ -102,7 +113,7 @@ app (fun W) V
            → Γ ⊢ B
            -------------------
            → Γ ⊢ A ×ᵗ B
-          
+
   fst      : {Γ : Ctx}
            → {A B : Type}
            → Γ ⊢ A ×ᵗ B
@@ -156,18 +167,18 @@ app (fun W) V
 
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
-           → (I (par c))  -- ??? al je (I (par c))
-           → (I (ar c) → Γ ⊢ tree)
+           → Γ ⊢ J (par c)
+           → Γ ∷ J (ar c) ⊢ tree
            --------------------
            → Γ ⊢ tree
 
   fold     : {Γ : Ctx}
            → ∀{A : Type}
            → (Γ ⊢ tree)
-           → ( ∀(c : ℂ) →  Γ ⊢ base (par c) ⇒ᵗ (base (ar c) ⇒ᵗ A) ⇒ᵗ A)
+           → ( ∀(c : ℂ) →  Γ ⊢ J (par c) ⇒ᵗ (J (ar c) ⇒ᵗ A) ⇒ᵗ A)
            --------------------
            → Γ ⊢ A
-  
+
   -- functions for base types
 
   baseFun  : {Γ : Ctx}
@@ -177,23 +188,3 @@ app (fun W) V
            → Γ ⊢ base A
            --------------------
            → Γ ⊢ base A
-
-
-
-data Tree : Set where
-  Constr   : ∀(c : ℂ)
-           → (I (par c))
-           → (I (ar c) → Tree)
-           --------------------
-           → Tree
-
-
-
-Fold     : ∀{A : Set}
-           → Tree 
-           → (∀(c : ℂ) → (I (par c)) → (I (ar c) → A) → A)
-           --------------------
-           → A
-
-Fold {A} (Constr c x args) f = f c x (λ i → Fold (args i) f)
-
