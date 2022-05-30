@@ -47,14 +47,13 @@ data _∈_ {A : Set} : A → List' A → Set where
 
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
-
+{-
   -- Context
-  {-
   LET_IN_  : {Γ : Ctx}
-           → (A : Type)
+           → {A : Type}
            → {B : Type}
            → Γ ⊢ A
-           -> G , A |- B
+           → Γ ⊢ A ⇒ᵗ B
            -----------------------
            → Γ ⊢ B
 
@@ -197,3 +196,4 @@ Fold     : ∀{A : Set}
 
 Fold {A} (Constr c x args) f = f c x (λ i → Fold (args i) f)
 
+ 

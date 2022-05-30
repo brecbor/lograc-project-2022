@@ -31,7 +31,7 @@ aux-proj ∈-here (_ , x) = x
 aux-proj (∈-there index) (xs , _) = aux-proj index xs
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
--- ⟦ LET x IN t ⟧ᵢ η = {! ⟦ t ⟧ᵢ (η , x)  !}
+-- ⟦ LET t IN u ⟧ᵢ η = ⟦ app u t ⟧ᵢ η
 ⟦ var index ⟧ᵢ η = aux-proj index η
 ⟦ const {Γ} {A} c ⟧ᵢ η = c
 ⟦ unit ⟧ᵢ _  = tt
