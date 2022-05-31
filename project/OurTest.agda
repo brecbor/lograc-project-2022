@@ -7,6 +7,7 @@ open import Data.Unit            using (⊤; tt)
 open import Data.Empty
 open import Data.Nat
 open import Data.Product
+open import Data.Sum
 
 data Children : Set where
   left : Children
@@ -60,10 +61,19 @@ ar node = baseᵍ children
   ; ar = ar
   }
 
+open Signature.Signature 𝕊
 
+⟦_⟧ᵍ : Ground BaseType → Set
+⟦ baseᵍ b ⟧ᵍ = I' b
+⟦ emptyᵍ ⟧ᵍ = ⊥
+⟦ unitᵍ ⟧ᵍ = ⊤
+⟦ A +ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ
+⟦ A ×ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ
 
--- K : ∀ (c : Const') → ⟦ ConstArg' c ⟧ᵍ → ⟦ ConstResult' c ⟧ᵍ
--- K = ?
+K : (c : Const) → ⟦ ConstArg c ⟧ᵍ → ⟦ ConstResult c ⟧ᵍ
+K zero tt = 0
+K succ n = 1 + n
+K plus (m , n) = m + n
 
 open import Interpreter 𝕊
 open import STLC 𝕊
@@ -72,7 +82,12 @@ program : (x : ⊤) → ⊤
 program = ⟦ unit ⟧ᵢ
 
 program2 : (x : ⊤) → ℕ
-program2 = ⟦ const zero unit ⟧ᵢ 
+program2 = ⟦ const zero unit ⟧ᵢ
+
+
+program2-1 : ℕ
+program2-1 = ⟦ const zero unit ⟧ᵢ tt
+
 {-
 program3 : (x : ⊤) →  Σ ℕ (λ _ → ℕ) -- Agda.Builtin.Sigma.Σ ℕ (λ _ → ℕ)
 program3 = ⟦ const 5 ؛ const 4 ⟧ᵢ

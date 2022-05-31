@@ -41,7 +41,7 @@ Fold f (Constr c p t) = f c p (Fold f ∘ t)
 ⟦ A +ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ
 ⟦ A ×ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ
 
-postulate K : ∀ (c : Const) → ⟦ ConstArg c ⟧ᵍ → ⟦ ConstResult c ⟧ᵍ 
+postulate K : (c : Const) → ⟦ ConstArg c ⟧ᵍ → ⟦ ConstResult c ⟧ᵍ 
 
 ⟦_⟧ : Type → Set
 ⟦ base b ⟧ = I b
