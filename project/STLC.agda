@@ -30,7 +30,7 @@ data Type : Set where
   _×ᵗ_ : Type → Type → Type
   _⇒ᵗ_ : Type → Type → Type
   _+ᵗ_ : Type → Type → Type
-  tree : Type  -- ??? ali je to prav
+  tree : ℂ → Type
 
 infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
@@ -40,8 +40,8 @@ J : Signature.Ground BaseType → Type
 J (baseᵍ B) = base B
 J emptyᵍ = empty
 J unitᵍ = unit
-J (A +ᵍ B) = J A ×ᵗ J B
-J (A ×ᵍ B) = J A +ᵗ J B
+J (A +ᵍ B) = J A +ᵗ J B
+J (A ×ᵍ B) = J A ×ᵗ J B
 
 
 -- Ctx = List Type
@@ -167,13 +167,14 @@ app (fun W) V
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
            → Γ ⊢ J (par c)
-           → Γ ∷ J (ar c) ⊢ tree
+           → Γ ∷ J (ar c) ⊢ tree c
            --------------------
-           → Γ ⊢ tree
+           → Γ ⊢ tree c
 
   fold     : {Γ : Ctx}
+           → {c₂ : ℂ}
            → ∀{A : Type}
-           → (Γ ⊢ tree)
+           → (Γ ⊢ tree c₂)
            → ( ∀(c : ℂ) →  Γ ⊢ J (par c) ⇒ᵗ (J (ar c) ⇒ᵗ A) ⇒ᵗ A)
            --------------------
            → Γ ⊢ A

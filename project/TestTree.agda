@@ -24,16 +24,29 @@ ar : ℂ → BaseType
 ar leaf = empty
 ar node = children 
 -}
-data Tree (P : Set) (A : Set) : Set where
+data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
   Constr   : ∀(c : ℂ)
-           → P
-           → (A  → Tree P A) -- dodala oklepaje
+           → P c
+           → (A c → Tree P A) -- dodala oklepaje
            --------------------
            → Tree P A
 
-leaf1 : Tree ⊤ ⊥
+leaf1 : Tree (λ { leaf → ⊤
+                ; node → ℕ })
+             (λ { leaf → ⊥
+                ; node → Children })
 leaf1 = Constr leaf tt λ { () }
 
-node1 : Tree ℕ Children
-node1 = Constr node 5 (λ {left → {! leaf1  !}
-                        ; right → {!   !}})
+node1 : Tree (λ { leaf → ⊤
+                ; node → ℕ })
+             (λ { leaf → ⊥
+                ; node → Children })
+node1 = Constr node 5 (λ { left → Constr leaf tt (λ { () })
+                         ; right → Constr leaf tt (λ { () })})
+
+node2 : Tree (λ { leaf → ⊤
+                ; node → ℕ })
+             (λ { leaf → ⊥
+                ; node → Children })
+node2 = Constr node 5 (λ { left → {! leaf1  !}
+                         ; right → Constr leaf tt (λ { () })})

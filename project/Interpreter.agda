@@ -15,10 +15,10 @@ module Interpreter (𝕊 : Signature.Signature) where
 open STLC 𝕊
 open Signature.Signature 𝕊
 
-data Tree (P : Set) (A : Set) : Set where
+data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
   Constr   : ∀(c : ℂ)
-           → P
-           → (A  → Tree P A) -- dodala oklepaje
+           → P c
+           → (A c → Tree P A) -- dodala oklepaje
            --------------------
            → Tree P A
 
@@ -29,7 +29,7 @@ data Tree (P : Set) (A : Set) : Set where
 ⟦ A ×ᵗ B ⟧ = ⟦ A ⟧ × ⟦ B ⟧
 ⟦ A ⇒ᵗ B ⟧ = ⟦ A ⟧ → ⟦ B ⟧
 ⟦ A +ᵗ B ⟧ = ⟦ A ⟧ ⊎ ⟦ B ⟧
-⟦ tree ⟧ = Tree {! ⟦ J (par _) ⟧  !} {! ⟦ J (ar _) ⟧  !} --tu ne vem kaj dat v luknjo, a je sploh ok? 
+⟦ tree c ⟧ = Tree (λ c' → {! ⟦ J (par c') ⟧  !}) λ c' → {! ⟦ J (ar c') ⟧ !}  -- termination checking failed 
 
 ⟦_⟧ₑ : Ctx → Set
 ⟦ [] ⟧ₑ = ⊤ -- ⊥
