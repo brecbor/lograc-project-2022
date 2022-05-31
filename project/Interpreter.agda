@@ -3,6 +3,7 @@ open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum             using (_⊎_; inj₁; inj₂;  [_,_] )
 open import Data.Empty          -- using (⊥; ⊥-elim)
 open import Data.Unit            using (⊤; tt)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym)
 -- open import Data.List            using (List; []; _∷_; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 open import Function using (id; _∘_)
@@ -22,6 +23,21 @@ data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
            --------------------
            → Tree P A
 
+Fold     : {P : ℂ → Set} {A : ℂ → Set} {B : Set}
+           → (∀ (c : ℂ) → P c → (A c → B) → B)
+           → Tree P A
+           --------------------
+           → B
+
+Fold f (Constr c p t) = f c p (Fold f ∘ t)
+
+⟦_⟧ᵍ : Ground BaseType → Set
+⟦ baseᵍ b ⟧ᵍ = I b
+⟦ emptyᵍ ⟧ᵍ = ⊥
+⟦ unitᵍ ⟧ᵍ = ⊤
+⟦ A +ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ
+⟦ A ×ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ
+
 ⟦_⟧ : Type → Set
 ⟦ base b ⟧ = I b
 ⟦ unit ⟧ = ⊤
@@ -29,29 +45,28 @@ data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
 ⟦ A ×ᵗ B ⟧ = ⟦ A ⟧ × ⟦ B ⟧
 ⟦ A ⇒ᵗ B ⟧ = ⟦ A ⟧ → ⟦ B ⟧
 ⟦ A +ᵗ B ⟧ = ⟦ A ⟧ ⊎ ⟦ B ⟧
-⟦ tree _ ⟧ = Tree (λ c' → {! ⟦ J (par c') ⟧  !}) λ c' → {! ⟦ J (ar c') ⟧ !}  -- termination checking failed 
+⟦ tree ⟧ = Tree (λ c → ⟦ par c ⟧ᵍ) (λ c → ⟦ ar c ⟧ᵍ)  -- termination checking failed
+
+⟦⟧ᵍ≡⟦J⟧ : (A : Ground BaseType) → ⟦ A ⟧ᵍ ≡ ⟦ J A ⟧
+⟦⟧ᵍ≡⟦J⟧ (baseᵍ b) = {!!}
+⟦⟧ᵍ≡⟦J⟧ emptyᵍ = {!!}
+⟦⟧ᵍ≡⟦J⟧ unitᵍ = {!!}
+⟦⟧ᵍ≡⟦J⟧ (A +ᵍ B) = {!!}
+⟦⟧ᵍ≡⟦J⟧ (A ×ᵍ B) = {!!}
 
 ⟦_⟧ₑ : Ctx → Set
 ⟦ [] ⟧ₑ = ⊤ -- ⊥
 ⟦ Γ ∷ A ⟧ₑ = ⟦ Γ ⟧ₑ × ⟦ A ⟧
 
 
-Fold     : ∀{A : Set}
-           → Tree {! J par !} {!!}
-           → (∀(c : ℂ) → ⟦ J (par c) ⟧ → (⟦ J (ar c) ⟧ → A) → A)
-           --------------------
-           → A
-
-Fold (Constr c x args) f = {!   !}
---Fold {A} (Constr c x args) f = f c x (λ i → Fold (args i) f)
-
-
 aux-proj : {A : Type} {Γ : Ctx} → A ∈ Γ → ⟦ Γ ⟧ₑ → ⟦ A ⟧
 aux-proj ∈-here (_ , x) = x
 aux-proj (∈-there index) (xs , _) = aux-proj index xs
 
+lemica : {A B : Set} → A ≡ B → A → B
+lemica refl p = p
+
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
- -- ⟦ LET t IN u ⟧ᵢ η = ⟦ app u t ⟧ᵢ η
 ⟦ var index ⟧ᵢ η = aux-proj index η
 ⟦ const {Γ} {A} c ⟧ᵢ η = c
 ⟦ unit ⟧ᵢ _  = tt
@@ -65,6 +80,5 @@ aux-proj (∈-there index) (xs , _) = aux-proj index xs
 ⟦ fun t ⟧ᵢ η = λ z → ⟦ t ⟧ᵢ (η , z)
 ⟦ app t u ⟧ᵢ η = (⟦ t ⟧ᵢ  η) (⟦ u ⟧ᵢ  η)
 ⟦ constr c param args ⟧ᵢ η =  {!   !} -- Constr c param (λ i → ⟦ args i ⟧ᵢ  η)
-⟦ fold t f ⟧ᵢ η = {!   !} -- Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η
+⟦ fold f t ⟧ᵢ η = Fold (λ c p t' → ⟦ f c ⟧ᵢ ((η , lemica (⟦⟧ᵍ≡⟦J⟧ (par c)) p) , λ x → t' (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ar c))) x)) ) (⟦ t ⟧ᵢ η) -- Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η
 ⟦ baseFun name x y ⟧ᵢ η = BaseOp name (⟦ x ⟧ᵢ η) (⟦ y ⟧ᵢ η)
- 

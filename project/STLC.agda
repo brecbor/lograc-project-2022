@@ -30,7 +30,7 @@ data Type : Set where
   _×ᵗ_ : Type → Type → Type
   _⇒ᵗ_ : Type → Type → Type
   _+ᵗ_ : Type → Type → Type
-  tree : ℂ → Type
+  tree : Type
 
 infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
@@ -45,6 +45,8 @@ J (A ×ᵍ B) = J A ×ᵗ J B
 
 
 -- Ctx = List Type
+infixl 3 _∷_
+
 data List' (A : Set) : Set where
   [] : List' A
   _∷_ : List' A → A → List' A
@@ -58,24 +60,7 @@ data _∈_ {A : Set} : A → List' A → Set where
 
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
-{-
-  -- Context
-  LET_IN_  : {Γ : Ctx}
-           → {A : Type}
-           → {B : Type}
-           → Γ ⊢ A
-           → Γ ⊢ A ⇒ᵗ B
-           -----------------------
-           → Γ ⊢ B
 
-
-let x = V in W
-let V in W
-
-(lambda x . W) V
-app (fun W) V
-
-  -}
   var      : {Γ : Ctx}
            → {A : Type}
            → A ∈ Γ
@@ -167,15 +152,14 @@ app (fun W) V
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
            → Γ ⊢ J (par c)
-           → Γ ⊢ J (ar c) ⇒ᵗ tree c
+           → Γ ⊢ J (ar c) ⇒ᵗ tree
            --------------------
-           → Γ ⊢ tree c
+           → Γ ⊢ tree
 
   fold     : {Γ : Ctx}
-           → {c₂ : ℂ}
            → ∀{A : Type}
-           → (Γ ⊢ tree c₂)
-           → ( ∀(c : ℂ) →  Γ ⊢ J (par c) ⇒ᵗ (J (ar c) ⇒ᵗ A) ⇒ᵗ A)
+           → (∀ (c : ℂ) →  Γ ∷ J (par c) ∷ J (ar c) ⇒ᵗ A ⊢ A)
+           → (Γ ⊢ tree)
            --------------------
            → Γ ⊢ A
 
@@ -188,3 +172,27 @@ app (fun W) V
            → Γ ⊢ base A
            --------------------
            → Γ ⊢ base A
+
+sugar-id : {A : Type} {Γ : Ctx} → Γ ⊢ A ⇒ᵗ A
+sugar-id = fun (var ∈-here)
+
+-- LET_IN_ : {A B : Type} {Γ : Ctx} → Γ ⊢ A → Γ ∷ A ⊢ B → Γ ⊢ B
+-- LET cow IN rabbit = {!!}
+{-
+  -- Context
+  LET_IN_  : {Γ : Ctx}
+           → {A : Type}
+           → {B : Type}
+           → Γ ⊢ A
+           → Γ ⊢ A ⇒ᵗ B
+           -----------------------
+           → Γ ⊢ B
+
+
+let x = V in W
+let V in W
+
+(lambda x . W) V
+app (fun W) V
+
+  -}
