@@ -49,10 +49,9 @@ ar : ℂ' → Ground BaseType'
 ar leaf = emptyᵍ
 ar node = baseᵍ children
 
-𝕊 : Signature.Signature
+𝕊 : LangSignature
 𝕊 = record
   { BaseType = BaseType'
-  ; I = I'
   ; Const = Const'
   ; ConstArg = ConstArg'
   ; ConstResult = ConstResult'
@@ -61,22 +60,29 @@ ar node = baseᵍ children
   ; ar = ar
   }
 
-open Signature.Signature 𝕊
+open LangSignature 𝕊
 
+{-
 ⟦_⟧ᵍ : Ground BaseType → Set
 ⟦ baseᵍ b ⟧ᵍ = I' b
 ⟦ emptyᵍ ⟧ᵍ = ⊥
 ⟦ unitᵍ ⟧ᵍ = ⊤
 ⟦ A +ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ
 ⟦ A ×ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ
+-}
+
+
+open import STLC 𝕊
+open import Interpreter 𝕊 I' 
 
 K : (c : Const) → ⟦ ConstArg c ⟧ᵍ → ⟦ ConstResult c ⟧ᵍ
 K zero tt = 0
 K succ n = 1 + n
 K plus (m , n) = m + n
 
-open import Interpreter 𝕊
-open import STLC 𝕊
+
+open LangInterpretation K 
+
 
 program : (x : ⊤) → ⊤
 program = ⟦ unit ⟧ᵢ

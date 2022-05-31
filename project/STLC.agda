@@ -1,6 +1,6 @@
 open import Signature
 
-module STLC (𝕊 : Signature.Signature) where
+module STLC (𝕊 : LangSignature) where
 {-
 postulate BaseType : Set
 postulate I : BaseType → Set
@@ -21,7 +21,7 @@ import Data.Unit
 -- open import Data.List            using (List; []; _∷_; [_]; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 
-open Signature.Signature 𝕊
+open LangSignature 𝕊
 
 data Type : Set where
   base : BaseType → Type
@@ -36,7 +36,7 @@ infixr 6 _×ᵗ_
 infixr 5 _+ᵗ_
 infixr 4 _⇒ᵗ_
 
-J : Signature.Ground BaseType → Type
+J : Ground BaseType → Type
 J (baseᵍ B) = base B
 J emptyᵍ = empty
 J unitᵍ = unit

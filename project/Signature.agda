@@ -9,10 +9,10 @@ module Signature where
     _+ᵍ_ : Ground B → Ground B → Ground B
     _×ᵍ_ : Ground B → Ground B → Ground B
 
-  record Signature : Set (suc zero) where
+  record LangSignature : Set (suc zero) where
     field
       BaseType : Set
-      I : BaseType → Set
+      -- I : BaseType → Set
       Const : Set
       ConstArg : Const → Ground BaseType
       ConstResult : Const → Ground BaseType
