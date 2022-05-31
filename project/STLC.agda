@@ -167,7 +167,7 @@ app (fun W) V
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
            → Γ ⊢ J (par c)
-           → Γ ∷ J (ar c) ⊢ tree c
+           → Γ ⊢ J (ar c) ⇒ᵗ tree c
            --------------------
            → Γ ⊢ tree c
 

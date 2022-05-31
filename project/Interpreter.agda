@@ -18,7 +18,7 @@ open Signature.Signature 𝕊
 data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
   Constr   : ∀(c : ℂ)
            → P c
-           → (A c → Tree P A) -- dodala oklepaje
+           → (A c → Tree P A)
            --------------------
            → Tree P A
 
@@ -29,7 +29,7 @@ data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
 ⟦ A ×ᵗ B ⟧ = ⟦ A ⟧ × ⟦ B ⟧
 ⟦ A ⇒ᵗ B ⟧ = ⟦ A ⟧ → ⟦ B ⟧
 ⟦ A +ᵗ B ⟧ = ⟦ A ⟧ ⊎ ⟦ B ⟧
-⟦ tree c ⟧ = Tree (λ c' → {! ⟦ J (par c') ⟧  !}) λ c' → {! ⟦ J (ar c') ⟧ !}  -- termination checking failed 
+⟦ tree _ ⟧ = Tree (λ c' → {! ⟦ J (par c') ⟧  !}) λ c' → {! ⟦ J (ar c') ⟧ !}  -- termination checking failed 
 
 ⟦_⟧ₑ : Ctx → Set
 ⟦ [] ⟧ₑ = ⊤ -- ⊥
