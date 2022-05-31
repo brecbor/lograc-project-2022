@@ -1,3 +1,5 @@
+open import Signature
+
 module OurTest where
 
 
@@ -10,46 +12,68 @@ data Children : Set where
   left : Children
   right : Children
 
-data BaseType : Set where
-  nat : BaseType
-  empty : BaseType
-  unit : BaseType
-  children : BaseType
+data BaseType' : Set where
+  nat : BaseType'
+  children : BaseType'
 
-I : BaseType → Set
-I nat = ℕ
-I empty = ⊥
-I unit = ⊤
-I children = Children
+I' : BaseType' → Set
+I' nat = ℕ
+I' children = Children
 
-data BaseDef : BaseType → Set where
-  plus : BaseDef nat
+data Const' : Set where
+  zero : Const'
+  succ : Const'
+  plus : Const'
 
-BaseOp : {A : BaseType} → BaseDef A → I A → I A → I A
-BaseOp plus m n = m + n
+ConstArg' : Const' → Ground BaseType'
+ConstArg' zero = unitᵍ
+ConstArg' succ = baseᵍ nat
+ConstArg' plus = baseᵍ nat ×ᵍ baseᵍ nat
 
-data ℂ : Set where
-  leaf : ℂ
-  node : ℂ
+ConstResult' : Const' → Ground BaseType'
+ConstResult' zero = baseᵍ nat
+ConstResult' succ = baseᵍ nat
+ConstResult' plus = baseᵍ nat
 
-par : ℂ → BaseType
-par leaf = unit
-par node = nat
 
-ar : ℂ → BaseType
-ar leaf = empty
-ar node = children 
+data ℂ' : Set where
+  leaf : ℂ'
+  node : ℂ'
 
-open import Interpreter BaseType I BaseDef BaseOp ℂ par ar
-open import STLC BaseType I BaseDef BaseOp ℂ par ar
+par : ℂ' → Ground BaseType'
+par leaf = unitᵍ
+par node = baseᵍ nat
 
+ar : ℂ' → Ground BaseType'
+ar leaf = emptyᵍ
+ar node = baseᵍ children
+
+𝕊 : Signature.Signature
+𝕊 = record
+  { BaseType = BaseType'
+  ; I = I'
+  ; Const = Const'
+  ; ConstArg = ConstArg'
+  ; ConstResult = ConstResult'
+  ; ℂ = ℂ'
+  ; par = par
+  ; ar = ar
+  }
+
+
+
+-- K : ∀ (c : Const') → ⟦ ConstArg' c ⟧ᵍ → ⟦ ConstResult' c ⟧ᵍ
+-- K = ?
+
+open import Interpreter 𝕊
+open import STLC 𝕊
 
 program : (x : ⊤) → ⊤
 program = ⟦ unit ⟧ᵢ
 
 program2 : (x : ⊤) → ℕ
-program2 = ⟦ const 5 ⟧ᵢ 
-
+program2 = ⟦ const zero unit ⟧ᵢ 
+{-
 program3 : (x : ⊤) →  Σ ℕ (λ _ → ℕ) -- Agda.Builtin.Sigma.Σ ℕ (λ _ → ℕ)
 program3 = ⟦ const 5 ؛ const 4 ⟧ᵢ
 
@@ -101,7 +125,7 @@ program12 = ⟦
     aux-tree left = constr leaf tt λ { () }
     aux-tree right = constr node 9 λ { left → constr leaf tt λ { () }
                                      ; right → constr leaf tt λ { () } }
-
+-}
 {-
 Vprasanja:
 1. pri var bi lahko bil argument s tipom impliciten in bi se vedno delal? :)
@@ -113,4 +137,4 @@ Vprasanja:
 TODO:
 1. probava ce dela var, kjer je argument s tipom impliciten
 2. napiseva program s fold
--}
+-} 

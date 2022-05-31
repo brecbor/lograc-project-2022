@@ -70,10 +70,10 @@ data _⊢_ : Ctx → Type → Set where
   -- base
 
   const       : {Γ : Ctx}
-              → {A : BaseType}
-              → I A
-              ------------------
-              → Γ ⊢ base A
+              → ( k : Const )
+              → ( Γ ⊢ J (ConstArg k))
+              -----------------------
+              → Γ ⊢ J (ConstResult k)
 
   -- unit
 
@@ -152,7 +152,7 @@ data _⊢_ : Ctx → Type → Set where
   constr   : {Γ : Ctx}
            → ∀(c : ℂ)
            → Γ ⊢ J (par c)
-           → Γ ⊢ J (ar c) ⇒ᵗ tree
+           → Γ ∷ J (ar c) ⊢ tree
            --------------------
            → Γ ⊢ tree
 
@@ -163,36 +163,5 @@ data _⊢_ : Ctx → Type → Set where
            --------------------
            → Γ ⊢ A
 
-  -- functions for base types
-
-  baseFun  : {Γ : Ctx}
-           → {A : BaseType}
-           → BaseDef A
-           → Γ ⊢ base A
-           → Γ ⊢ base A
-           --------------------
-           → Γ ⊢ base A
-
-sugar-id : {A : Type} {Γ : Ctx} → Γ ⊢ A ⇒ᵗ A
-sugar-id = fun (var ∈-here)
-
--- LET_IN_ : {A B : Type} {Γ : Ctx} → Γ ⊢ A → Γ ∷ A ⊢ B → Γ ⊢ B
--- LET cow IN rabbit = {!!}
-{-
-  -- Context
-  LET_IN_  : {Γ : Ctx}
-           → {A : Type}
-           → {B : Type}
-           → Γ ⊢ A
-           → Γ ⊢ A ⇒ᵗ B
-           -----------------------
-           → Γ ⊢ B
-
-
-let x = V in W
-let V in W
-
-(lambda x . W) V
-app (fun W) V
-
-  -}
+LET_IN_ : {A B : Type} {Γ : Ctx} → Γ ⊢ A → Γ ∷ A ⊢ B → Γ ⊢ B
+LET t IN u = app (fun u) t

@@ -3,10 +3,13 @@ open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum             using (_⊎_; inj₁; inj₂;  [_,_] )
 open import Data.Empty          -- using (⊥; ⊥-elim)
 open import Data.Unit            using (⊤; tt)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym)
+-- open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; subst)
 -- open import Data.List            using (List; []; _∷_; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 open import Function using (id; _∘_)
+import Relation.Binary.PropositionalEquality as Eq
+open Eq                          using (_≡_; refl; sym; trans; cong; subst)
+open Eq.≡-Reasoning              using (begin_; _≡⟨⟩_; step-≡; _∎)
 
 import STLC
 open import Signature
@@ -15,7 +18,7 @@ module Interpreter (𝕊 : Signature.Signature) where
 
 open STLC 𝕊
 open Signature.Signature 𝕊
-
+ 
 data Tree (P : ℂ → Set) (A : ℂ → Set) : Set where
   Constr   : ∀(c : ℂ)
            → P c
@@ -38,6 +41,8 @@ Fold f (Constr c p t) = f c p (Fold f ∘ t)
 ⟦ A +ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ
 ⟦ A ×ᵍ B ⟧ᵍ = ⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ
 
+postulate K : ∀ (c : Const) → ⟦ ConstArg c ⟧ᵍ → ⟦ ConstResult c ⟧ᵍ 
+
 ⟦_⟧ : Type → Set
 ⟦ base b ⟧ = I b
 ⟦ unit ⟧ = ⊤
@@ -48,11 +53,21 @@ Fold f (Constr c p t) = f c p (Fold f ∘ t)
 ⟦ tree ⟧ = Tree (λ c → ⟦ par c ⟧ᵍ) (λ c → ⟦ ar c ⟧ᵍ)  -- termination checking failed
 
 ⟦⟧ᵍ≡⟦J⟧ : (A : Ground BaseType) → ⟦ A ⟧ᵍ ≡ ⟦ J A ⟧
-⟦⟧ᵍ≡⟦J⟧ (baseᵍ b) = {!!}
-⟦⟧ᵍ≡⟦J⟧ emptyᵍ = {!!}
-⟦⟧ᵍ≡⟦J⟧ unitᵍ = {!!}
-⟦⟧ᵍ≡⟦J⟧ (A +ᵍ B) = {!!}
-⟦⟧ᵍ≡⟦J⟧ (A ×ᵍ B) = {!!}
+⟦⟧ᵍ≡⟦J⟧ (baseᵍ b) = refl
+⟦⟧ᵍ≡⟦J⟧ emptyᵍ = refl
+⟦⟧ᵍ≡⟦J⟧ unitᵍ = refl
+⟦⟧ᵍ≡⟦J⟧ (A +ᵍ B) = 
+  begin
+    (⟦ A ⟧ᵍ ⊎ ⟦ B ⟧ᵍ)  ≡⟨ cong (⟦ A ⟧ᵍ ⊎_) (⟦⟧ᵍ≡⟦J⟧ B) ⟩
+    (⟦ A ⟧ᵍ ⊎ ⟦ J B ⟧)  ≡⟨ cong (_⊎ ⟦ J B ⟧) (⟦⟧ᵍ≡⟦J⟧ A) ⟩
+    (⟦ J A ⟧ ⊎ ⟦ J B ⟧)
+  ∎
+⟦⟧ᵍ≡⟦J⟧ (A ×ᵍ B) = 
+  begin
+    (⟦ A ⟧ᵍ × ⟦ B ⟧ᵍ)  ≡⟨ cong (⟦ A ⟧ᵍ ×_) (⟦⟧ᵍ≡⟦J⟧ B) ⟩
+    (⟦ A ⟧ᵍ × ⟦ J B ⟧)  ≡⟨ cong (_× ⟦ J B ⟧) (⟦⟧ᵍ≡⟦J⟧ A) ⟩
+    (⟦ J A ⟧ × ⟦ J B ⟧)
+  ∎
 
 ⟦_⟧ₑ : Ctx → Set
 ⟦ [] ⟧ₑ = ⊤ -- ⊥
@@ -68,7 +83,7 @@ lemica refl p = p
 
 ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
 ⟦ var index ⟧ᵢ η = aux-proj index η
-⟦ const {Γ} {A} c ⟧ᵢ η = c
+⟦ const c args ⟧ᵢ η =  lemica (⟦⟧ᵍ≡⟦J⟧ (ConstResult c)) (K c (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ConstArg c))) (⟦ args ⟧ᵢ η))) --  {! K c (⟦ args ⟧ᵢ η)  !}
 ⟦ unit ⟧ᵢ _  = tt
 ⟦ absurd t ⟧ᵢ =  ⊥-elim ∘ ⟦ t ⟧ᵢ
 ⟦ t ؛ u ⟧ᵢ η =  ⟦ t ⟧ᵢ  η , ⟦ u ⟧ᵢ  η
@@ -79,6 +94,5 @@ lemica refl p = p
 ⟦ case t u₁ u₂ ⟧ᵢ η = [ ( λ z → ⟦  u₁ ⟧ᵢ ( η , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ ( η , z) )) ] ((⟦ t ⟧ᵢ  η))
 ⟦ fun t ⟧ᵢ η = λ z → ⟦ t ⟧ᵢ (η , z)
 ⟦ app t u ⟧ᵢ η = (⟦ t ⟧ᵢ  η) (⟦ u ⟧ᵢ  η)
-⟦ constr c param args ⟧ᵢ η =  {!   !} -- Constr c param (λ i → ⟦ args i ⟧ᵢ  η)
-⟦ fold f t ⟧ᵢ η = Fold (λ c p t' → ⟦ f c ⟧ᵢ ((η , lemica (⟦⟧ᵍ≡⟦J⟧ (par c)) p) , λ x → t' (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ar c))) x)) ) (⟦ t ⟧ᵢ η) -- Fold (⟦ t ⟧ᵢ  η) λ i → ⟦ f i ⟧ᵢ  η
-⟦ baseFun name x y ⟧ᵢ η = BaseOp name (⟦ x ⟧ᵢ η) (⟦ y ⟧ᵢ η)
+⟦ constr c param args ⟧ᵢ η =  Constr c (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (par c))) (⟦ param ⟧ᵢ η)) λ i → ⟦ args ⟧ᵢ (η , lemica (⟦⟧ᵍ≡⟦J⟧ (ar c)) i)
+⟦ fold f t ⟧ᵢ η = Fold (λ c p t' → ⟦ f c ⟧ᵢ ((η , lemica (⟦⟧ᵍ≡⟦J⟧ (par c)) p) , λ x → t' (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ar c))) x)) ) (⟦ t ⟧ᵢ η)

@@ -12,7 +12,10 @@ module Signature where
   record Signature : Set (suc zero) where
     field
       BaseType : Set
-      BaseDef : BaseType → Set
+      I : BaseType → Set
+      Const : Set
+      ConstArg : Const → Ground BaseType
+      ConstResult : Const → Ground BaseType
       ℂ : Set
       par : ℂ → Ground BaseType
       ar : ℂ → Ground BaseType
