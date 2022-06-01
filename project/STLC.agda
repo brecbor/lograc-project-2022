@@ -58,6 +58,9 @@ data _∈_ {A : Set} : A → List' A → Set where
     ∈-here  : {x : A} → {xs : List' A} → x ∈ (xs ∷ x)
     ∈-there : {x y : A} {xs : List' A} → x ∈ xs → x ∈ (xs ∷ y)
 
+
+infixr 6 _؛_
+infix 4 LET_IN_
 infixl 2 _⊢_
 data _⊢_ : Ctx → Type → Set where
 
