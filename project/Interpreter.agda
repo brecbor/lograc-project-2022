@@ -3,8 +3,6 @@ open import Data.Product --        using (Σ; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum             using (_⊎_; inj₁; inj₂;  [_,_] )
 open import Data.Empty          -- using (⊥; ⊥-elim)
 open import Data.Unit            using (⊤; tt)
--- open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; subst)
--- open import Data.List            using (List; []; _∷_; _++_; length; map)
 open import Data.List.Properties using (map-id; map-compose)
 open import Function using (id; _∘_)
 import Relation.Binary.PropositionalEquality as Eq

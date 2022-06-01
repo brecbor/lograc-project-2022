@@ -1,17 +1,7 @@
 open import Signature
 
 module STLC (𝕊 : LangSignature) where
-{-
-postulate BaseType : Set
-postulate I : BaseType → Set
 
-postulate ℂ : Set
-postulate par : ℂ → BaseType  -- TODO: enkrat bo BaseType sel v GroundType
-postulate ar : ℂ → BaseType
--}
--- in the end we will change the above lines to
--- module STLC (BaseType : Set) where
--- (ℂ : Set) (ar : ℂ → Set)
 
 open import Data.Nat             using (ℕ; zero; suc; _≤_; z≤n; s≤s; _<_)
 open import Data.Product         using (Σ; _,_; proj₁; proj₂; Σ-syntax)
@@ -44,7 +34,6 @@ J (A +ᵍ B) = J A +ᵗ J B
 J (A ×ᵍ B) = J A ×ᵗ J B
 
 
--- Ctx = List Type
 infixl 3 _∷_
 
 data List' (A : Set) : Set where
@@ -166,5 +155,6 @@ data _⊢_ : Ctx → Type → Set where
            --------------------
            → Γ ⊢ A
 
+-- syntactic sugar
 LET_IN_ : {A B : Type} {Γ : Ctx} → Γ ⊢ A → Γ ∷ A ⊢ B → Γ ⊢ B
 LET t IN u = app (fun u) t

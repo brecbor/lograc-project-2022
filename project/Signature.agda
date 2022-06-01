@@ -12,7 +12,6 @@ module Signature where
   record LangSignature : Set (suc zero) where
     field
       BaseType : Set
-      -- I : BaseType → Set
       Const : Set
       ConstArg : Const → Ground BaseType
       ConstResult : Const → Ground BaseType
