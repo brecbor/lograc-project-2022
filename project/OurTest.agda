@@ -112,7 +112,7 @@ program6 = ⟦ const plus (` 42 ؛ ` 9) ⟧ᵢ tt
 -- if-then-else
 program7 : (x : Σ ⊤ (λ _ → Bool)) → ℕ
 program7 = ⟦ const if-then-else (var ∈-here ؛ const succ (const zero unit) ؛ const zero unit) ⟧ᵢ
--- program6 (tt , true)  --->  1
+-- program7 (tt , true)  --->  1
 
 -- case
 program8 : Σ Bool (λ _ → ℕ)
