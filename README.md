@@ -1,12 +1,16 @@
-# Skeleton repository for the Logika v računalništvu student projects
+# Definitional interpreters for STLC - sum and algebraic data types 
 
-This repository is set up as an Agda library and it contains:
+*Logika v računalništvu student projects*
 
-* `lograc-project.agda-lib`: the library configuration file which contains
-  the list of file system paths that Agda should include
+## Task
 
-* `agda-stdlib/`: Agda standard library as a git submodule
+Task of the project was to implement STCL and extend it with sum types and algebraic data types (W types). For each of the types we defined typing rules for contructors and desctructors as well as interpretation of those functions. Some examples are included to ilustrate the application of the language.
 
-* `agda-categories/`: Agda categories library as a git submodule
 
-* `project/`: the top-level source code directory for your Agda code
+## Files structure
+
+`project/`: folder contains agda code for the project which is defined in the following files:
+- Interpreter.agda: contains interpretation of the language
+- STLC.agda: contains typing rules for the language
+- OurTest.agda: contains few test examples
+- Signature.agda: signature of the language
