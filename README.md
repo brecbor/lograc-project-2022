@@ -1,6 +1,6 @@
 # Definitional interpreters for STLC - sum and algebraic data types 
 
-*Logika v računalništvu student projects*
+*Project for the Logic in computer science course*
 
 ## Task
 
