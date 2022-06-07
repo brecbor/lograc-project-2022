@@ -48,7 +48,7 @@ module Interpreter (𝕊 : LangSignature) (I : LangSignature.BaseType 𝕊  → 
         ⟦ A ×ᵗ B ⟧ = ⟦ A ⟧ × ⟦ B ⟧
         ⟦ A ⇒ᵗ B ⟧ = ⟦ A ⟧ → ⟦ B ⟧
         ⟦ A +ᵗ B ⟧ = ⟦ A ⟧ ⊎ ⟦ B ⟧
-        ⟦ tree ⟧ = Tree (λ c → ⟦ par c ⟧ᵍ) (λ c → ⟦ ar c ⟧ᵍ)  -- termination checking failed
+        ⟦ tree ⟧ = Tree (λ c → ⟦ par c ⟧ᵍ) (λ c → ⟦ ar c ⟧ᵍ)  
 
         ⟦⟧ᵍ≡⟦J⟧ : (A : Ground BaseType) → ⟦ A ⟧ᵍ ≡ ⟦ J A ⟧
         ⟦⟧ᵍ≡⟦J⟧ (baseᵍ b) = refl
@@ -76,12 +76,10 @@ module Interpreter (𝕊 : LangSignature) (I : LangSignature.BaseType 𝕊  → 
         aux-proj ∈-here (_ , x) = x
         aux-proj (∈-there index) (xs , _) = aux-proj index xs
 
-        lemica : {A B : Set} → A ≡ B → A → B
-        lemica refl p = p
 
         ⟦_⟧ᵢ : {Γ : Ctx} {A : Type} → Γ ⊢ A → (⟦ Γ ⟧ₑ → ⟦ A ⟧)
         ⟦ var index ⟧ᵢ η = aux-proj index η
-        ⟦ const c args ⟧ᵢ η =  lemica (⟦⟧ᵍ≡⟦J⟧ (ConstResult c)) (K c (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ConstArg c))) (⟦ args ⟧ᵢ η))) --  {! K c (⟦ args ⟧ᵢ η)  !}
+        ⟦ const c args ⟧ᵢ η =  subst (λ A → A) (⟦⟧ᵍ≡⟦J⟧ (ConstResult c)) (K c (subst (λ A → A) (sym (⟦⟧ᵍ≡⟦J⟧ (ConstArg c))) (⟦ args ⟧ᵢ η))) --  {! K c (⟦ args ⟧ᵢ η)  !}
         ⟦ unit ⟧ᵢ _  = tt
         ⟦ absurd t ⟧ᵢ =  ⊥-elim ∘ ⟦ t ⟧ᵢ
         ⟦ t ؛ u ⟧ᵢ η =  ⟦ t ⟧ᵢ  η , ⟦ u ⟧ᵢ  η
@@ -92,5 +90,5 @@ module Interpreter (𝕊 : LangSignature) (I : LangSignature.BaseType 𝕊  → 
         ⟦ case t u₁ u₂ ⟧ᵢ η = [ ( λ z → ⟦  u₁ ⟧ᵢ ( η , z) ) , (( λ z → ⟦  u₂ ⟧ᵢ ( η , z) )) ] ((⟦ t ⟧ᵢ  η))
         ⟦ fun t ⟧ᵢ η = λ z → ⟦ t ⟧ᵢ (η , z)
         ⟦ app t u ⟧ᵢ η = (⟦ t ⟧ᵢ  η) (⟦ u ⟧ᵢ  η)
-        ⟦ constr c param args ⟧ᵢ η =  Constr c (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (par c))) (⟦ param ⟧ᵢ η)) λ i → ⟦ args ⟧ᵢ (η , lemica (⟦⟧ᵍ≡⟦J⟧ (ar c)) i)
-        ⟦ fold f t ⟧ᵢ η = Fold (λ c p t' → ⟦ f c ⟧ᵢ ((η , lemica (⟦⟧ᵍ≡⟦J⟧ (par c)) p) , λ x → t' (lemica (sym (⟦⟧ᵍ≡⟦J⟧ (ar c))) x)) ) (⟦ t ⟧ᵢ η)
+        ⟦ constr c param args ⟧ᵢ η =  Constr c (subst (λ A → A) (sym (⟦⟧ᵍ≡⟦J⟧ (par c))) (⟦ param ⟧ᵢ η)) λ i → ⟦ args ⟧ᵢ (η , subst (λ A → A) (⟦⟧ᵍ≡⟦J⟧ (ar c)) i)
+        ⟦ fold f t ⟧ᵢ η = Fold (λ c p t' → ⟦ f c ⟧ᵢ ((η , subst (λ A → A) (⟦⟧ᵍ≡⟦J⟧ (par c)) p) , λ x → t' (subst (λ A → A) (sym (⟦⟧ᵍ≡⟦J⟧ (ar c))) x)) ) (⟦ t ⟧ᵢ η)

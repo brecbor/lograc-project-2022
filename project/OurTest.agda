@@ -3,11 +3,13 @@ open import Signature
 module OurTest where
 
 
-open import Data.Unit            using (⊤; tt)
+open import Data.Unit using (⊤; tt)
 open import Data.Empty
 open import Data.Nat
 open import Data.Product
 open import Data.Sum
+import Relation.Binary.PropositionalEquality as Eq
+open Eq using (_≡_; refl; sym; trans; cong; subst)
 open import Function using (id; _∘_)
 open import Data.Bool
 
@@ -163,6 +165,9 @@ program13 = ⟦ fold (λ { leaf → const zero unit
                                     ؛ app (var ∈-here) (inr unit)))}) 
                   binary_tree ⟧ᵢ tt 
 
+proof13 : program13 ≡ 51
+proof13 = refl                  
+
 program14 : ⟦ ([] ∷ base nat) ∷ base nat ⟧ₑ → ℕ
 program14 = ⟦ var (∈-there  ∈-here) ⟧ᵢ
 
@@ -171,3 +176,4 @@ program15 = ⟦ var (∈-there (∈-there ∈-here)) ⟧ᵢ (((tt , 5) , 8) , 9)
 
 program16 : (x : ⊤) (x₁ : ⟦ base nat ×ᵗ base nat ⟧) → ⟦ base nat ⟧
 program16 = ⟦ fun (fst (var ∈-here)) ⟧ᵢ
+
